@@ -1,4 +1,4 @@
-"""StoryForge v1.6 Phase 4a -- WritingFormulaAnalyzer for L2 writing formula compliance."""
+"""nebula v1.6 Phase 4a -- WritingFormulaAnalyzer for L2 writing formula compliance."""
 import json
 import logging
 from dataclasses import dataclass

@@ -45,7 +45,7 @@ const initialState: WritingState = {
   error: null,
 };
 
-const STORAGE_KEY = "storyforge_stage4_state";
+const STORAGE_KEY = "nebula_stage4_state";
 
 function loadPersistedState(): WritingState {
   try {

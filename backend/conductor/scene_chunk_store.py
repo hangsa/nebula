@@ -11,7 +11,7 @@ Atomicity: chunks are <= 50 chars (UTF-8 <= 150 bytes), well below POSIX PIPE_BU
 (4096 bytes). Opening with mode "a" gives O_APPEND | O_CREAT | O_WRONLY; the
 kernel guarantees the offset-then-write pair is atomic so concurrent appends
 from a single process cannot tear a line. Multi-process appends would still be
-safe on POSIX; on Windows (not supported by storyforge) the only mitigation is
+safe on POSIX; on Windows (not supported by nebula) the only mitigation is
 a per-chunk threading.Lock — left out because deployment target is Linux/macOS.
 
 Lifecycle:

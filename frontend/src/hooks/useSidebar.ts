@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-const STORAGE_KEY = "storyforge.sidebar";
+const STORAGE_KEY = "nebula.sidebar";
 const DEFAULT_WIDTH = 280;
 const MIN = 200;
 const MAX = 480;

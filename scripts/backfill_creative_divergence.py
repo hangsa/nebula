@@ -1,6 +1,6 @@
 """Backfill creative_divergence.json for projects committed before v2.x.
 
-StoryForge v2.x writes both `concept_and_dna.json` and
+nebula v2.x writes both `concept_and_dna.json` and
 `creative_divergence.json` on /commit (dual-write for Stage 1 guard compat —
 see `backend/api/stage1_concept.py:_read_creative_intent`). Projects committed
 before v2.x only have `concept_and_dna.json`; this script backfills the compat

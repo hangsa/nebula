@@ -15,7 +15,7 @@ const SAMPLE_STATS = {
 };
 
 beforeEach(() => {
-  localStorage.removeItem("storyforge.home.sidebar.collapsed");
+  localStorage.removeItem("nebula.home.sidebar.collapsed");
 });
 
 function renderSidebar(initialPath = "/") {
@@ -40,7 +40,7 @@ describe("StatsSidebar", () => {
   });
 
   it("renders only the collapsed icon column when localStorage says collapsed", () => {
-    localStorage.setItem("storyforge.home.sidebar.collapsed", "true");
+    localStorage.setItem("nebula.home.sidebar.collapsed", "true");
     renderSidebar();
     expect(screen.queryByText("全部统计")).not.toBeInTheDocument();
     expect(screen.queryByText("快捷操作")).not.toBeInTheDocument();

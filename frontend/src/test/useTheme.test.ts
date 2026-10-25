@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useTheme } from "../hooks/useTheme";
 
-const STORAGE_KEY = "storyforge.theme";
+const STORAGE_KEY = "nebula.theme";
 
 beforeEach(() => {
   localStorage.removeItem(STORAGE_KEY);

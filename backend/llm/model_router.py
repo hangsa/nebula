@@ -1,5 +1,5 @@
 """
-StoryForge v1.6 — ModelRouter: 配置驱动的 LLM 模型路由器。
+nebula v1.6 — ModelRouter: 配置驱动的 LLM 模型路由器。
 
 根据 config/model_tiers.yaml 中的 Tier 定义和 Agent 任务映射，
 为每个 LLM 调用请求路由到正确的 Provider 和模型。

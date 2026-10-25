@@ -1,4 +1,4 @@
-"""StoryForge v1.6 Phase 3a — ChapterReviewBuilder + CoherenceScorer."""
+"""nebula v1.6 Phase 3a — ChapterReviewBuilder + CoherenceScorer."""
 
 import json
 import logging

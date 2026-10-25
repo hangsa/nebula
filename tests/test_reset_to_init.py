@@ -3,7 +3,7 @@ state and regress current_stage to STAGE3 (章节大纲阶段), preserving
 init-phase artifacts and stage_history.
 
 The regress_to_stage3 helper is the foundation of the workspace "初始化"
-button: it deletes chapters/*.md + progress.json + .storyforge_checkpoint.json
+button: it deletes chapters/*.md + progress.json + .nebula_checkpoint.json
 + autopilot/chunks/*.jsonl, then writes project.json with current_stage=STAGE3.
 It is intentionally NOT transactional — idempotent retry is the recovery
 path for partial-write failures (see spec §错误处理).
@@ -74,12 +74,12 @@ def test_regress_deletes_progress_and_checkpoint(sm, projects_dir):
     proj = projects_dir / pid
     _seed_project(projects_dir, pid)
     (proj / "progress.json").write_text('{"chapters":[]}', encoding="utf-8")
-    (proj / ".storyforge_checkpoint.json").write_text('{"pipeline_stage":"x"}', encoding="utf-8")
+    (proj / ".nebula_checkpoint.json").write_text('{"pipeline_stage":"x"}', encoding="utf-8")
 
     sm.regress_to_stage3(pid)
 
     assert not (proj / "progress.json").exists()
-    assert not (proj / ".storyforge_checkpoint.json").exists()
+    assert not (proj / ".nebula_checkpoint.json").exists()
 
 
 def test_regress_clears_chunks_but_keeps_dir(sm, projects_dir):
@@ -233,7 +233,7 @@ def test_reset_preview_detects_runtime_state(client, projects_dir):
         encoding="utf-8",
     )
     (proj / "progress.json").write_text('{"chapters":[]}', encoding="utf-8")
-    (proj / ".storyforge_checkpoint.json").write_text("{}", encoding="utf-8")
+    (proj / ".nebula_checkpoint.json").write_text("{}", encoding="utf-8")
     chunks = proj / "autopilot" / "chunks"
     chunks.mkdir(parents=True)
     (chunks / "ch01_scene_001.jsonl").write_text('{"seq":1}')
@@ -279,7 +279,7 @@ def test_reset_endpoint_clears_state(client, projects_dir):
     chapters.mkdir()
     (chapters / "ch01_scene_001_draft.md").write_text("body")
     (proj / "progress.json").write_text('{"chapters":[]}', encoding="utf-8")
-    (proj / ".storyforge_checkpoint.json").write_text("{}", encoding="utf-8")
+    (proj / ".nebula_checkpoint.json").write_text("{}", encoding="utf-8")
 
     resp = client.post(f"/api/project/{pid}/reset")
     assert resp.status_code == 200
@@ -292,7 +292,7 @@ def test_reset_endpoint_clears_state(client, projects_dir):
 
     assert list((proj / "chapters").glob("ch*_scene_*_draft.md")) == []
     assert not (proj / "progress.json").exists()
-    assert not (proj / ".storyforge_checkpoint.json").exists()
+    assert not (proj / ".nebula_checkpoint.json").exists()
     assert json.loads((proj / "project.json").read_text(encoding="utf-8"))["current_stage"] == "STAGE3"
 
 

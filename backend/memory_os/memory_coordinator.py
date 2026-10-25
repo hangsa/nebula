@@ -1,4 +1,4 @@
-"""StoryForge v1.6 Phase 2.5 — MemoryCoordinator: unified context assembly across L0-L4."""
+"""nebula v1.6 Phase 2.5 — MemoryCoordinator: unified context assembly across L0-L4."""
 
 import logging
 from dataclasses import dataclass, field

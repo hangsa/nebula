@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**StoryForge** (UI design system: "Nebula Forge") is an AI-powered Creative Narrative Operating System for generating Chinese web novels (网文). It orchestrates multiple LLM agents through a deterministic state-machine backbone to produce long-form fiction with high creativity, narrative tension, and character consistency.
+**nebula** (UI design system: "Nebula Forge") is an AI-powered Creative Narrative Operating System for generating Chinese web novels (网文). It orchestrates multiple LLM agents through a deterministic state-machine backbone to produce long-form fiction with high creativity, narrative tension, and character consistency.
 
 **Core principle:** Deterministic code controls the skeleton; LLMs fill the flesh. Consistency checks, state tracking, and reader metrics are all formula/rule-based — never LLM-blindsided.
 
@@ -16,13 +16,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## User Flow
 
-A typical session walks three pages:
+A typical session walks two pages:
 
-1. **`/`** — `HomePage` (`frontend/src/pages/HomePage.tsx`). Project entry. Layout: `StatsSidebar` (left rail with stats + refresh + Prompt Plaza / AI Console / More Actions triggers) + `CreateProjectCard` + `BookShelf` (sortable/filterable **table** of all projects, with bulk-delete). Replaces the older `InitPage` route.
-2. **`/project/:id/wizard`** — `WizardDeepLinkPage`. Deep-linkable init wizard (concept → world → characters → **map** → outline → behavior examples → enter workspace). Each step is a component under `frontend/src/components/wizard/` (`InitWizardModal`, `ConceptStep`, `WorldStep`, `CharacterStep`, `OutlineStep`, `MapStep`, `BehaviorExamplesSection`, `ChapterOutlineStep`, `WizardContext`, `WizardSteps`).
-3. **`/project/:id/workspace`** — `WorkspacePage`. The project's day-to-day cockpit. Layout: `WorkspaceTopBar` + `WorkspaceLayout` with `ChapterTreePanel` (left), `WritingArea` (center, switches between `ManualStartModal`/`AutopilotMiddlePanel`/`ChapterStreamPanel`), `ContextPanel` (right), `ModeSwitchConfirmModal` (manual ↔ managed switch). Top-level route, **NOT** wrapped in `MainLayout` (its own chrome).
+1. **`/`** — `HomePage` (`frontend/src/pages/HomePage.tsx`) rendered inside `HomeLayout` (`frontend/src/components/layout/HomeLayout.tsx`). Layout: `StatsSidebar` (left rail with global stats + Prompt Plaza / AI Console / More Actions triggers) + `BookShelf` (sortable/filterable **table** of all projects, with bulk-delete). Project creation goes through `CreateProjectModal` (opened from the sidebar or table), then auto-navigates to `/project/:id/workspace?tab=settings`. Replaces the older `InitPage` route.
+2. **`/project/:id/workspace`** — `WorkspacePage`. The project's day-to-day cockpit. Layout: `WorkspaceTopBar` with a **two-tab switcher** (`项目设定` = wizard, `正文手稿` = writing — manuscript tab is locked until all 7 wizard steps finish) + tab-specific panel:
+   - `tab=settings` → `WorkspaceWizardPanel` (7 steps: `CreativeDivergenceStep` → `ConceptStep` → `WorldStep` → `CharacterStep` → `MapStep` → `OutlineStep` → `ChapterOutlineStep`, all under `frontend/src/components/wizard/`).
+   - `tab=manuscript` → `WorkspaceWritingPanel` (`ChapterTreePanel` left · `WritingArea`/`AutopilotMiddlePanel`/`ChapterStreamPanel` center · `ContextPanel` right with `ModeSwitchConfirmModal` for manual ↔ managed switch). Right-column editors (concept/world/character/outline tabs) were **merged into the wizard** in v2.x — `ContextPanel` now only carries diagnostics + export.
 
-After the wizard finishes (step 6), the user lands in the workspace at the appropriate mode — usually **managed** (autopilot) for hands-off writing, or **manual** for one-off chapter editing.
+Top-level route, **NOT** wrapped in `MainLayout` (its own chrome).
+
+Legacy routes still resolve but redirect: `/project/:id/wizard` → `WizardDeepLinkPage` (redirect-only shell, forwards to `/workspace?tab=settings`). `InitWizardModal` is **DEPRECATED** (kept for 3 test files under `frontend/src/test/`) but no longer used by any active route.
+
+For deep-dive architecture on the wizard ↔ workspace split and the 7-step creative pipeline (Stage 0 divergence → 1 concept → 2 world/character → 3a novel outline → 3b chapter outline → 4 writing), see `docs/ARCHITECTURE.md` and `docs/wizard-inventory.md`. The wizard-inventory doc is verbose but its §9 (Workspace 融合完成) is the authoritative state for the wizard merge.
 
 ## Dual-Mode Writing: Manual vs Managed
 
@@ -76,7 +81,11 @@ The autopilot SSE channel is the **same broadcaster** that `/chapter-stream` sub
 - **Outline Context** — `backend/outline_context/`: `builder.py`, `volumes.py`. Splits the full outline into per-volume chunks for context assembly.
 - **Services** — `backend/services/`: `agent_prompt_stores.py`, `global_prompt_override_store.py`, `llm_config.py`, `llm_usage_log.py`, `prompt_override_store.py`.
 - **Cross-cutting LLM infra** — `backend/llm/openai_compatible_provider.py`, `mock_provider.py` added; providers can also be added dynamically via the env-var prefix (above).
-- **Map System** — `backend/map_system/`(M1+M2+M3+M6,M4/M5 见后续 plan):9 类地理实体 (Map/Region/Location/Route/POI/LocationState/Footprint/Assertion/ChangeLog),单文件 `map.json` + `map_snapshots/chapter_NNN.json` 章节快照/回滚。Wizard Step 4(`MapStep.tsx`)暴露 5 Tab(区域/地点/路线/POI/快照)+ Mermaid 拓扑 modal。`PlannerAgent.generate_map()` 经 Tier-1 prompt(`map_generation.yaml`)生成初始 5-15 region + 20-40 location。`POST /map/snapshot/{chapter}` + `POST /map/rollback/{chapter}` 提供不可逆回滚。`strict_geo: false` 默认 OFF,老项目无 map.json 不报错。
+- **Map System** — `backend/map_system/`(M1–M6 全部落地):9 类地理实体 (Map/Region/Location/Route/POI/LocationState/Footprint/Assertion/ChangeLog),单文件 `map.json` + `map_snapshots/chapter_NNN.json` 章节快照/回滚。Wizard Step 4 (`MapStep.tsx`) 暴露 5 Tab (地点/区域/路线/POI/快照,注意地点 Tab 排第一) + `MermaidMapModal` 拓扑图。`PlannerAgent.generate_map()` 经 Tier-1 prompt (`map_generation.yaml`) 生成初始 5-15 region + 20-40 location。`POST /map/snapshot/{chapter}` + `POST /map/rollback/{chapter}` 提供不可逆回滚。
+  - **M4 地图卡注入 (已落地):** `map_system/map_card.py` 拼 4 行 mini-card → `memory_os/memory_coordinator.assemble_for_scene()` 末尾 append 到 l2_context → Writer 在 `scene_writing.yaml` §9.4 看到当前地点 + 角色足迹 + 自查清单。`StoryOSAgent` 解析 `character_location_change` SF_LOG 写 `Map.footprints`,`map_system/extraction.py` 跑 Tier-1 LLM mention 抽取补全。
+  - **M5 地理一致性断言 (已落地):** `map_system/assertions.py` 9 条规则 (3 Blocker: route/access/time-budget · 3 Warning: distance/climate/density · 3 Info: alias/faction/poi)。`backend/agents/reviewer.py` 加 9 个 `check_7_geo_*` 方法,`run_fact_guard()` 末尾聚合。POI 不可见约束由 `storyos.list_discoverable_pois_for_card` 控制。
+  - **Coerce / 防御性 schema:** `/generate-map` + `/regenerate-map-section` 走 Pydantic coerce (LLM 输出 `LocationType` 大小写 / 枚举漂移是已知 bug,见 commit `3b2c9ad` + `a5ef921`)。
+  - **Config:** `strict_geo: false` 默认 OFF,老项目无 `map.json` 不报错;Wizard Settings Panel 有显式 toggle + 上限 + 模式。
 
 ## Key Design: SF_LOG Tags
 
@@ -157,7 +166,7 @@ v1.7 single-chapter breakdown: 3× Scene Writing (81K) + 3× Narrative Guard (27
 
 **Caching:** Per-chapter cache (survives across scenes in the same chapter): L1 Hot, L4 Narrative, L2 Warm summaries. Per-scene refresh (no caching): Character State Machine. Chapter switch clears all cache. Saves ~60% context assembly overhead.
 
-**Checkpoint & resume:** Scene-level granularity in `.storyforge_checkpoint.json` inside each project. Snapshots: L0 Runtime, all StoryOS Registries, all Character States, ReaderOS state. Written after each scene completes (overwrite mode). Recovery replays from the recorded `pipeline_stage`.
+**Checkpoint & resume:** Scene-level granularity in `.nebula_checkpoint.json` inside each project. Snapshots: L0 Runtime, all StoryOS Registries, all Character States, ReaderOS state. Written after each scene completes (overwrite mode). Recovery replays from the recorded `pipeline_stage`.
 
 ## Development Environment
 
@@ -217,6 +226,8 @@ Supported providers (see `backend/llm/`): `anthropic`, `deepseek`, `minimax`, `m
 python scripts/validate_project_genres.py            # check genres for all projects
 python scripts/repair_progress_from_drafts.py       # rebuild progress.json from chapter_drafts/ (recovery after autopilot loss)
 python scripts/backfill_behavior_examples.py        # one-off backfill for behavior examples data
+python scripts/backfill_creative_divergence.py      # one-off backfill for creative_divergence.json
+python scripts/migrate_raw_intent_ids_to_names.py   # migrate raw intent ids → names in legacy projects
 ```
 
 ### Frontend design-system imports

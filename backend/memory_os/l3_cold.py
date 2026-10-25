@@ -1,4 +1,4 @@
-"""StoryForge v1.6 Phase 2.3 — L3ColdMemory: full-novel vector + keyword hybrid search."""
+"""nebula v1.6 Phase 2.3 — L3ColdMemory: full-novel vector + keyword hybrid search."""
 
 import json
 import logging
@@ -33,7 +33,11 @@ class L3ColdMemory:
     """
 
     VECTOR_DIM = 1024
-    COLLECTION_PREFIX = "storyforge"
+    COLLECTION_PREFIX = "nebula"
+    # Pre-rename prefix. Projects indexed before the StoryForge → nebula
+    # rename still hold their vectors under the old collection name; it is
+    # adopted instead of creating a fresh empty collection.
+    LEGACY_COLLECTION_PREFIX = "storyforge"
 
     def __init__(
         self,
@@ -53,6 +57,7 @@ class L3ColdMemory:
         self._available = False
         self._qdrant_client = None
         self._collection_name = f"{self.COLLECTION_PREFIX}_{project_id}"
+        self._legacy_collection_name = f"{self.LEGACY_COLLECTION_PREFIX}_{project_id}"
 
         self._init_qdrant()
         if self._available:
@@ -78,6 +83,14 @@ class L3ColdMemory:
             try:
                 self._qdrant_client.get_collection(self._collection_name)
             except Exception:
+                # Pre-rename collection present? Adopt it so existing
+                # projects keep their L3 index instead of starting empty.
+                try:
+                    self._qdrant_client.get_collection(self._legacy_collection_name)
+                    self._collection_name = self._legacy_collection_name
+                except Exception:
+                    pass
+            if not self._qdrant_client.collection_exists(self._collection_name):
                 self._qdrant_client.create_collection(
                     collection_name=self._collection_name,
                     vectors_config=VectorParams(

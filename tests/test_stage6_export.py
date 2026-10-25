@@ -188,7 +188,7 @@ class TestTitlePage:
         text, _filename = exporter.export({"strip_sf_logs": True, "add_toc": False, "include_title_page": True})
 
         assert "# 星辰大海" in text
-        assert "StoryForge" in text
+        assert "nebula" in text
 
     def test_no_title_page_when_disabled(self, projects_dir):
         _write_json(projects_dir, "proj_test", "project.json", _make_project(title="星辰大海"))
@@ -388,7 +388,7 @@ class TestEdgeCases:
 
         # Title page
         assert "# 龙族崛起" in text
-        assert "StoryForge" in text
+        assert "nebula" in text
         # TOC
         assert "# 目录" in text
         assert "第1章" in text

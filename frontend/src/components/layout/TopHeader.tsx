@@ -22,7 +22,7 @@ export default function TopHeader({
       <div className="flex items-center gap-4">
         <SidebarToggleButton collapsed={collapsed} onToggle={onToggleSidebar} />
         <span className="font-display text-lg text-primary-container font-semibold">
-          StoryForge
+          nebula
         </span>
         {projectName && (
           <>

@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export type WorkspaceMode = "managed" | "manual";
-const STORAGE_KEY = "storyforge.workspace.mode";
+const STORAGE_KEY = "nebula.workspace.mode";
 const VALID: WorkspaceMode[] = ["managed", "manual"];
 
 function isValid(v: string | null): v is WorkspaceMode {

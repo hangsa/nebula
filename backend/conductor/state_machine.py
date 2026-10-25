@@ -4,6 +4,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
+from backend.conductor.checkpoint import CheckpointManager
+
 
 class Stage(str, Enum):
     INIT = "INIT"
@@ -307,7 +309,11 @@ class StageStateMachine:
                 f.unlink()
 
         # 2. 删除运行时状态文件
-        for rel in ("progress.json", ".storyforge_checkpoint.json"):
+        for rel in (
+            "progress.json",
+            CheckpointManager.CHECKPOINT_FILENAME,
+            CheckpointManager.LEGACY_CHECKPOINT_FILENAME,
+        ):
             p = project_dir / rel
             if p.exists():
                 p.unlink()

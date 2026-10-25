@@ -7,7 +7,11 @@ from backend.config import settings
 
 
 class CheckpointManager:
-    CHECKPOINT_FILENAME = ".storyforge_checkpoint.json"
+    CHECKPOINT_FILENAME = ".nebula_checkpoint.json"
+    # Pre-rename filename. Projects created before the StoryForge → nebula
+    # rename still have the old file on disk; `_resolve_path` migrates it
+    # in place on first touch so no project loses its resume state.
+    LEGACY_CHECKPOINT_FILENAME = ".storyforge_checkpoint.json"
 
     def __init__(self, project_id: str, projects_dir: Optional[Path] = None):
         self.project_id = project_id
@@ -16,7 +20,25 @@ class CheckpointManager:
 
     @property
     def _checkpoint_path(self) -> Path:
-        return self._project_dir / self.CHECKPOINT_FILENAME
+        return self._resolve_path()
+
+    def _resolve_path(self) -> Path:
+        """Return the checkpoint path, migrating the legacy filename if needed.
+
+        If the new file exists, use it. Otherwise, if the legacy file
+        exists, rename it to the new name (best-effort — a failed rename
+        still leaves the legacy path readable) and return the new path.
+        """
+        new_path = self._project_dir / self.CHECKPOINT_FILENAME
+        if new_path.exists():
+            return new_path
+        legacy_path = self._project_dir / self.LEGACY_CHECKPOINT_FILENAME
+        if legacy_path.exists():
+            try:
+                legacy_path.replace(new_path)
+            except OSError:
+                return legacy_path
+        return new_path
 
     def save(
         self,
@@ -52,25 +74,31 @@ class CheckpointManager:
         }
 
         self._project_dir.mkdir(parents=True, exist_ok=True)
-        tmp = self._checkpoint_path.with_suffix(".tmp")
+        path = self._resolve_path()
+        tmp = path.with_suffix(".tmp")
         with open(tmp, "w", encoding="utf-8") as f:
             json.dump(checkpoint, f, ensure_ascii=False, indent=2)
-        tmp.replace(self._checkpoint_path)
+        tmp.replace(path)
 
         return checkpoint
 
     def load(self) -> Optional[dict]:
-        if not self._checkpoint_path.exists():
+        path = self._resolve_path()
+        if not path.exists():
             return None
-        with open(self._checkpoint_path, "r", encoding="utf-8") as f:
+        with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
 
     def has_checkpoint(self) -> bool:
-        return self._checkpoint_path.exists()
+        return self._resolve_path().exists()
 
     def delete(self) -> None:
-        if self._checkpoint_path.exists():
-            self._checkpoint_path.unlink()
+        # Remove both the current and the legacy filename — a project may
+        # carry the old file if it was never touched after the rename.
+        for name in (self.CHECKPOINT_FILENAME, self.LEGACY_CHECKPOINT_FILENAME):
+            p = self._project_dir / name
+            if p.exists():
+                p.unlink()
 
     def recover(self) -> dict:
         checkpoint = self.load()

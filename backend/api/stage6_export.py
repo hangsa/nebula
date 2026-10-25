@@ -34,7 +34,7 @@ class NovelExporter:
         progress = self._fm.read_json(self.project_id, "progress.json") or {}
 
         title = project.get("title", "未命名作品")
-        author = "StoryForge"
+        author = "nebula"
         chapters_progress = progress.get("chapters", [])
 
         # Build chapter→scenes mapping from progress.json

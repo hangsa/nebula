@@ -375,12 +375,12 @@ class TestClearCheckpointForChapter:
             "character_states": [],
             "timestamp": "2026-08-19T00:00:00Z",
         }
-        (proj / ".storyforge_checkpoint.json").write_text(json.dumps(checkpoint))
+        (proj / ".nebula_checkpoint.json").write_text(json.dumps(checkpoint))
 
         clear_checkpoint_for_chapter("p_ckpt", 5, tmp_path)
 
         # After sync: file deleted (chapter is being regenerated; no useful state)
-        assert not (proj / ".storyforge_checkpoint.json").exists()
+        assert not (proj / ".nebula_checkpoint.json").exists()
 
     def test_deletes_only_matching_chapter_when_different(self, tmp_path):
         proj = tmp_path / "p_ckpt2"
@@ -393,12 +393,12 @@ class TestClearCheckpointForChapter:
             "current_scene": 2,
             "pipeline_stage": "scene_review",
         }
-        (proj / ".storyforge_checkpoint.json").write_text(json.dumps(checkpoint))
+        (proj / ".nebula_checkpoint.json").write_text(json.dumps(checkpoint))
 
         clear_checkpoint_for_chapter("p_ckpt2", 5, tmp_path)
 
         # File should still exist (chapter mismatch → no action)
-        assert (proj / ".storyforge_checkpoint.json").exists()
+        assert (proj / ".nebula_checkpoint.json").exists()
 
     def test_no_op_when_checkpoint_missing(self, tmp_path):
         proj = tmp_path / "p_ckpt3"
@@ -411,10 +411,10 @@ class TestClearCheckpointForChapter:
         proj = tmp_path / "p_ckpt_corrupt"
         proj.mkdir()
         # Invalid JSON in checkpoint file
-        (proj / ".storyforge_checkpoint.json").write_text("{not valid json")
+        (proj / ".nebula_checkpoint.json").write_text("{not valid json")
         # Should not raise; should leave the corrupt file alone
         clear_checkpoint_for_chapter("p_ckpt_corrupt", 5, tmp_path)
-        assert (proj / ".storyforge_checkpoint.json").exists()
+        assert (proj / ".nebula_checkpoint.json").exists()
 
 
 @pytest.fixture

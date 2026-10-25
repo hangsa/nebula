@@ -12,7 +12,7 @@
 
 ## 1. 产品定位
 
-Creative Canvas 是整个 StoryForge 创作链路的**创意发散与收敛引擎**。
+Creative Canvas 是整个 nebula 创作链路的**创意发散与收敛引擎**。
 
 它不直接写故事，也不完成世界观、角色和大纲。它只做一件事：
 

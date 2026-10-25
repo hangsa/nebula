@@ -5,6 +5,7 @@ from datetime import datetime
 from fastapi import APIRouter, HTTPException
 
 from backend.config import settings
+from backend.conductor.checkpoint import CheckpointManager
 from backend.conductor.state_machine import ProjectNotFoundError, StageStateMachine
 from backend.models.project import Project
 from backend.utils.file_manager import FileManager
@@ -210,7 +211,13 @@ async def reset_preview(project_id: str):
     return {
         "draft_count": draft_count,
         "has_progress": (project_dir / "progress.json").exists(),
-        "has_checkpoint": (project_dir / ".storyforge_checkpoint.json").exists(),
+        "has_checkpoint": any(
+            (project_dir / name).exists()
+            for name in (
+                CheckpointManager.CHECKPOINT_FILENAME,
+                CheckpointManager.LEGACY_CHECKPOINT_FILENAME,
+            )
+        ),
         "has_chunks": has_chunks,
     }
 

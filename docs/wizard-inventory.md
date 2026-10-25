@@ -31,7 +31,7 @@
 ### 2.0 上下文 — `WizardContext.tsx`（504 行）
 
 - `WizardData` 字段：`concept` / `story_dna` / `world` / `characters` / `novel_outline` / `chapter1_outline` / `chapter_outline_progress`（`{done,total,last_user_modifications}`，断点用）
-- 持久化到 `sessionStorage`（`storyforge.wizard.state.<projectId>`，瞬时字段排除）
+- 持久化到 `sessionStorage`（`nebula.wizard.state.<projectId>`，瞬时字段排除）
 - 关键工具：
   - `STEP_DATA_KEY_TO_STEP` — 重新生成早期步骤时**自动清空下游步骤的数据**（防脏数据）
   - `jumpToStep` / `markStepGenerated` / `saveStep` / `skipStep` / `hydrateFromFiles`
@@ -152,7 +152,7 @@
 - 左列 260px（可拖拽改宽）—— `ChapterTreePanel`
 - 中列 min 400px（手动模式）/ 全宽（托管模式）—— `WritingArea` 或 `AutopilotMiddlePanel`
 - 右列 360px（可拖拽改宽）—— `ContextPanel`
-- 列宽持久化到 `localStorage` "storyforge.workspace.column-widths"
+- 列宽持久化到 `localStorage` "nebula.workspace.column-widths"
 - 双击 handle 折叠 / 展开
 
 ### 3.3 右栏 7 Tab — `ContextPanel.tsx`（154 行）
@@ -172,7 +172,7 @@
 - 底部：字数 + 按钮（重新生成 / Fact Guard / 保存草稿）
 - 拥有 `RegenerateModal`（收集用户修改意见）
 - 空状态：「前往生成大纲」按钮
-- 折叠状态持久化 `localStorage` "storyforge.workspace.outline-collapsed"
+- 折叠状态持久化 `localStorage` "nebula.workspace.outline-collapsed"
 
 ### 3.5 中栏 托管模式 — `AutopilotMiddlePanel.tsx`（579 行）
 

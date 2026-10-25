@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 
 export type Theme = "dark" | "light";
 
-const STORAGE_KEY = "storyforge.theme";
+const STORAGE_KEY = "nebula.theme";
 
 /**
  * Read the persisted theme. Defaults to "dark" on first load so existing

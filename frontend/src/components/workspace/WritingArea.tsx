@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { RegenerateModal } from "../shared/RegenerateModal";
 
-const OUTLINE_COLLAPSED_KEY = "storyforge.workspace.outline-collapsed";
+const OUTLINE_COLLAPSED_KEY = "nebula.workspace.outline-collapsed";
 
 export interface WritingCurrent {
   chapter_number: number;

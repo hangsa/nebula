@@ -1,4 +1,4 @@
-"""StoryForge v1.6 Phase 2.4 — L4NarrativeMemory: StoryOS registry summary for narrative awareness."""
+"""nebula v1.6 Phase 2.4 — L4NarrativeMemory: StoryOS registry summary for narrative awareness."""
 
 import json
 import logging

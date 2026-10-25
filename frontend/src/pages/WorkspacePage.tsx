@@ -13,7 +13,7 @@ import AIConsoleModal from "../components/aiConsole/AIConsoleModal";
 
 type WorkspaceTab = "settings" | "manuscript";
 
-const TAB_STORAGE_KEY = "storyforge.workspace.active-tab";
+const TAB_STORAGE_KEY = "nebula.workspace.active-tab";
 
 export default function WorkspacePage({ projectId: projectIdProp }: { projectId?: string } = {}) {
   const params = useParams<{ projectId: string }>();

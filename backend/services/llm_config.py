@@ -16,7 +16,7 @@ from backend.llm.model_router import get_model_router
 CONFIG_PATH = Path("config/model_tiers.yaml")
 ENV_PATH = Path("backend/.env")
 
-# Three providers that ship with StoryForge and have legacy Settings attrs
+# Three providers that ship with nebula and have legacy Settings attrs
 # (`anthropic_api_key`, `deepseek_api_key`, `minimax_api_key`) so pydantic
 # -settings picks up .env values without a restart. The migration step seeds
 # any of these that aren't already in the YAML, so a legacy config that

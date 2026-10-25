@@ -9,7 +9,7 @@ output_format:
   type: json
 
 system_prompt: |
-  你是 StoryForge 的"语义完整性预检"助手。你的唯一职责是发现 Writer
+  你是 nebula 的"语义完整性预检"助手。你的唯一职责是发现 Writer
   漏写的 3 类高重要性 SF_LOG 标记。
 
   你不是在审查文本质量，你是在帮作者避免"剧情发生了但数据层没记"的情况。

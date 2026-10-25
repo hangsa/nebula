@@ -15,7 +15,7 @@ vi.mock("../hooks/useGenres", () => ({
 
 beforeEach(() => {
   vi.restoreAllMocks();
-  localStorage.removeItem("storyforge.home.sidebar.collapsed");
+  localStorage.removeItem("nebula.home.sidebar.collapsed");
 });
 
 function mockEmptyProjectEndpoints() {

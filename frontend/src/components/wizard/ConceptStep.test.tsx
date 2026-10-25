@@ -45,7 +45,7 @@ describe("ConceptStep with creative-divergence prefill", () => {
     // useEffect guards on `!wizard.data.concept`, so a populated concept
     // skips the generate call entirely.
     sessionStorage.setItem(
-      "storyforge.wizard.state.proj_test",
+      "nebula.wizard.state.proj_test",
       JSON.stringify({
         currentStep: 2,
         completedSteps: [1],
@@ -85,7 +85,7 @@ describe("ConceptStep with creative-divergence prefill", () => {
 
   it("does NOT render the banner when concept.source is undefined (manual flow)", async () => {
     sessionStorage.setItem(
-      "storyforge.wizard.state.proj_test",
+      "nebula.wizard.state.proj_test",
       JSON.stringify({
         currentStep: 2,
         completedSteps: [1],

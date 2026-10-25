@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import WorkspaceLayout from "../components/workspace/WorkspaceLayout";
 
-const STORAGE_KEY = "storyforge.workspace.column-widths";
+const STORAGE_KEY = "nebula.workspace.column-widths";
 
 // JSDOM doesn't compute layout — stub getBoundingClientRect so the resize
 // handler sees a known container width (2000px — wide enough for tests to

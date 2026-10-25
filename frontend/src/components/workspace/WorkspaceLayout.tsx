@@ -8,7 +8,7 @@ interface Props {
   right: ReactNode;
 }
 
-const STORAGE_KEY = "storyforge.workspace.column-widths";
+const STORAGE_KEY = "nebula.workspace.column-widths";
 const DEFAULT_LEFT = 260;
 const DEFAULT_RIGHT = 360;
 const MIN_COL = 200;

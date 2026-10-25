@@ -625,7 +625,7 @@ describe("Workspace integration", () => {
     expect(await screen.findByTestId("chapter-4")).toBeInTheDocument();
     fireEvent.click(screen.getByTestId("chapter-4"));
     expect(screen.getByTestId("mode-switch-confirm")).toBeInTheDocument();
-    expect(localStorage.getItem("storyforge.workspace.mode")).toBeNull(); // still on managed
+    expect(localStorage.getItem("nebula.workspace.mode")).toBeNull(); // still on managed
   });
 
   it("'立即接管' on take-over modal switches to manual + loads that chapter's first scene", async () => {

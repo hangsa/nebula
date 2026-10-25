@@ -1,4 +1,4 @@
-"""FastAPI entry — StoryForge API.
+"""FastAPI entry — nebula API.
 
 Owns the application-level state for v1.9: AutopilotLoopService and the
 stage4 executor live on `app.state` so the autopilot API can spawn/cancel
@@ -85,7 +85,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="StoryForge API",
+    title="nebula API",
     description="AI-Powered Creative Narrative Operating System",
     version="0.1.0-mvp",
     lifespan=lifespan,

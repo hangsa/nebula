@@ -1,4 +1,4 @@
-# StoryForge maintenance scripts
+# nebula maintenance scripts
 
 One-off repair and migration scripts that operate directly on the `projects/`
 directory. Most are idempotent and default to **dry-run**; pass `--apply` to

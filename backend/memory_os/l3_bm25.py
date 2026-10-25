@@ -1,4 +1,4 @@
-"""StoryForge v1.6 Phase 2.2 — BM25Index + HybridSearcher for L3 Cold Memory."""
+"""nebula v1.6 Phase 2.2 — BM25Index + HybridSearcher for L3 Cold Memory."""
 
 import logging
 import pickle

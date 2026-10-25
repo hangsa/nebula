@@ -92,7 +92,7 @@ export default function MainLayout() {
   return (
     <div className="min-h-screen bg-canvas-bg">
       <TopHeader
-        projectName={projectName || projectId || "StoryForge"}
+        projectName={projectName || projectId || "nebula"}
         currentStage={currentStage}
         collaborationMode="live"
         autoSaveStatus="saved"

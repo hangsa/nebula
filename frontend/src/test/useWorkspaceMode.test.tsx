@@ -31,13 +31,13 @@ describe("useWorkspaceMode", () => {
   });
 
   it("falls back to localStorage when URL omits mode", () => {
-    localStorage.setItem("storyforge.workspace.mode", "manual");
+    localStorage.setItem("nebula.workspace.mode", "manual");
     const { result } = renderHook(() => useWorkspaceMode(), { wrapper: wrap() });
     expect(result.current.mode).toBe("manual");
   });
 
   it("URL takes precedence over localStorage", () => {
-    localStorage.setItem("storyforge.workspace.mode", "managed");
+    localStorage.setItem("nebula.workspace.mode", "managed");
     const { result } = renderHook(() => useWorkspaceMode(), {
       wrapper: wrap("/workspace?mode=manual"),
     });
@@ -50,7 +50,7 @@ describe("useWorkspaceMode", () => {
     });
     act(() => result.current.setMode("managed"));
     expect(result.current.mode).toBe("managed");
-    expect(localStorage.getItem("storyforge.workspace.mode")).toBe("managed");
+    expect(localStorage.getItem("nebula.workspace.mode")).toBe("managed");
   });
 
   it("falls back to 'manual' if ?mode=garbage", () => {

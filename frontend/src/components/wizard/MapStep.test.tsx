@@ -144,7 +144,7 @@ const SAMPLE_MAP: MapPayload = {
 
 function mountWithMap(initialMap: MapPayload = SAMPLE_MAP) {
   sessionStorage.setItem(
-    "storyforge.wizard.state.proj_test",
+    "nebula.wizard.state.proj_test",
     JSON.stringify({
       currentStep: 4,
       completedSteps: [1, 2, 3],

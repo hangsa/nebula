@@ -45,7 +45,7 @@ export default function StatsSidebar({
   return (
     <Sidebar
       width={240}
-      persistKey="storyforge.home.sidebar.collapsed"
+      persistKey="nebula.home.sidebar.collapsed"
       header={null}
       testId="stats-sidebar"
     >

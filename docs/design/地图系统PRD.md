@@ -1,8 +1,8 @@
 # 地图系统 PRD
 
 > **状态:** 草案 v1.0 · 待评审
-> **作者:** StoryForge 设计
-> **适用范围:** StoryForge v2.x · `nebula` 分支
+> **作者:** nebula 设计
+> **适用范围:** nebula v2.x · `nebula` 分支
 > **基线文档:** [`docs/design/地图系统设计.md`](./地图系统设计.md)（输入）,[`docs/design/webmain/DESIGN.md`](./webmain/DESIGN.md)（设计系统）
 
 ---
@@ -361,7 +361,7 @@ projects/<project_id>/
 
 ### 4.5 检查点集成
 
-`.storyforge_checkpoint.json` 的快照字段新增 `map_snapshot_hash`(chapter N 的 map hash)。Stage 4 启动时比对当前 `map.json` hash 是否与 checkpoint 一致,不一致则报警(避免 checkpoint 指向已不存在的地图状态)。
+`.nebula_checkpoint.json` 的快照字段新增 `map_snapshot_hash`(chapter N 的 map hash)。Stage 4 启动时比对当前 `map.json` hash 是否与 checkpoint 一致,不一致则报警(避免 checkpoint 指向已不存在的地图状态)。
 
 ---
 
@@ -631,7 +631,7 @@ def snapshot_map_at_chapter(project_id, chapter):
 1. 加载 `map_snapshots/chapter_N.json`
 2. 截断 `change_log` 到 chapter N
 3. 重写 `map.json`
-4. 重写 `.storyforge_checkpoint.json` 的 `map_snapshot_hash` 字段
+4. 重写 `.nebula_checkpoint.json` 的 `map_snapshot_hash` 字段
 
 ---
 

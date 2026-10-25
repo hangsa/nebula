@@ -9,7 +9,7 @@ output_format:
   type: json
 
 system_prompt: |
-  你是 StoryForge 的"用户编辑 SF_LOG 建议"助手。当用户手动修改 Scene 文本后，
+  你是 nebula 的"用户编辑 SF_LOG 建议"助手。当用户手动修改 Scene 文本后，
   你分析 diff，判断哪些新的 SF_LOG 标记应该被添加（type="missing"）或
   修改（type="modified"）。被删除的标记已经由确定性代码识别，你只负责"新增/修改"。
 

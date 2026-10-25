@@ -1,4 +1,4 @@
-"""StoryForge v1.6 Phase 2.1 — TextChunker + BgeM3Embedder for L3 Cold Memory."""
+"""nebula v1.6 Phase 2.1 — TextChunker + BgeM3Embedder for L3 Cold Memory."""
 
 import logging
 import re
@@ -167,10 +167,36 @@ class BgeM3Embedder:
     VECTOR_DIM = 1024
     BATCH_SIZE = 32
 
+    # Model cache root. Renamed storyforge → nebula with the project rename;
+    # the legacy path is still honoured when it holds the only copy of the
+    # bge-m3 weights, so existing machines don't re-download ~3GB.
+    _CACHE_ROOT = Path.home() / ".cache"
+    _LEGACY_CACHE_DIR = _CACHE_ROOT / "storyforge" / "models"
+    _CACHE_DIR = _CACHE_ROOT / "nebula" / "models"
+
+    @classmethod
+    def _holds_model(cls, cache_dir: Path) -> bool:
+        """True when the dir already contains the bge-m3 snapshot.
+
+        Checking the snapshot rather than the parent dir matters: a dir can
+        exist from a partial/failed download while still needing a full
+        re-download.
+        """
+        return (cache_dir / f"models--{cls.MODEL_NAME.replace('/', '--')}").exists()
+
     def __init__(self, cache_dir: Optional[Path] = None):
         self._model = None  # SentenceTransformer instance
         self._available: Optional[bool] = None  # None = not yet checked
-        self._cache_dir = cache_dir or Path.home() / ".cache" / "storyforge" / "models"
+        if cache_dir is not None:
+            self._cache_dir = cache_dir
+        elif (
+            self._holds_model(self._CACHE_DIR)
+            or not self._holds_model(self._LEGACY_CACHE_DIR)
+        ):
+            self._cache_dir = self._CACHE_DIR
+        else:
+            # Only the legacy dir has the model — keep using it in place.
+            self._cache_dir = self._LEGACY_CACHE_DIR
 
     @property
     def available(self) -> bool:

@@ -130,3 +130,63 @@ class TestRestoreRegistries:
         conflicts = json.loads(conflicts_path.read_text())
         assert len(conflicts) == 1
         assert conflicts[0]["id"] == "cf_001"
+
+
+class TestLegacyFilenameMigration:
+    """The StoryForge → nebula rename moved the checkpoint file from
+    `.storyforge_checkpoint.json` to `.nebula_checkpoint.json`. Projects
+    created before the rename must keep their resume state, so the legacy
+    file is migrated in place on first touch."""
+
+    def test_legacy_file_is_migrated_on_load(self, cm, projects_dir):
+        project_dir = projects_dir / "test_project"
+        project_dir.mkdir(parents=True, exist_ok=True)
+        legacy = project_dir / ".storyforge_checkpoint.json"
+        legacy.write_text(
+            json.dumps({"pipeline_stage": "scene_writing", "current_chapter": 7}),
+            encoding="utf-8",
+        )
+
+        assert cm.has_checkpoint()
+        data = cm.load()
+        assert data["current_chapter"] == 7
+        # Legacy file was renamed, not copied.
+        assert not legacy.exists()
+        assert (project_dir / ".nebula_checkpoint.json").exists()
+
+    def test_legacy_file_is_migrated_on_save(self, cm, projects_dir):
+        project_dir = projects_dir / "test_project"
+        project_dir.mkdir(parents=True, exist_ok=True)
+        (project_dir / ".storyforge_checkpoint.json").write_text(
+            json.dumps({"pipeline_stage": "scene_writing", "current_chapter": 3}),
+            encoding="utf-8",
+        )
+
+        cm.save(pipeline_stage="scene_reviewing", current_chapter=4, current_scene=1)
+
+        assert not (project_dir / ".storyforge_checkpoint.json").exists()
+        assert (project_dir / ".nebula_checkpoint.json").exists()
+        assert cm.load()["current_chapter"] == 4
+
+    def test_new_filename_wins_when_both_exist(self, cm, projects_dir):
+        project_dir = projects_dir / "test_project"
+        project_dir.mkdir(parents=True, exist_ok=True)
+        (project_dir / ".storyforge_checkpoint.json").write_text(
+            json.dumps({"current_chapter": 1}), encoding="utf-8"
+        )
+        (project_dir / ".nebula_checkpoint.json").write_text(
+            json.dumps({"current_chapter": 9}), encoding="utf-8"
+        )
+
+        assert cm.load()["current_chapter"] == 9
+
+    def test_delete_removes_both_filenames(self, cm, projects_dir):
+        project_dir = projects_dir / "test_project"
+        project_dir.mkdir(parents=True, exist_ok=True)
+        (project_dir / ".storyforge_checkpoint.json").write_text("{}", encoding="utf-8")
+        (project_dir / ".nebula_checkpoint.json").write_text("{}", encoding="utf-8")
+
+        cm.delete()
+
+        assert not (project_dir / ".storyforge_checkpoint.json").exists()
+        assert not (project_dir / ".nebula_checkpoint.json").exists()

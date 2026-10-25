@@ -1,4 +1,4 @@
-"""StoryForge v1.6 Phase 3b — ImpactAnalyzer for rollback impact propagation."""
+"""nebula v1.6 Phase 3b — ImpactAnalyzer for rollback impact propagation."""
 import hashlib
 import json
 import logging

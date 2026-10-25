@@ -201,7 +201,7 @@ describe("WritingArea", () => {
     expect(toggle.getAttribute("aria-expanded")).toBe("true");
   });
 
-  it("收起状态写入 localStorage（key=storyforge.workspace.outline-collapsed）", () => {
+  it("收起状态写入 localStorage（key=nebula.workspace.outline-collapsed）", () => {
     render(
       <WritingArea
         current={STRUCTURED_CURRENT}
@@ -214,13 +214,13 @@ describe("WritingArea", () => {
       />,
     );
     fireEvent.click(screen.getByTestId("writing-outline-toggle"));
-    expect(localStorage.getItem("storyforge.workspace.outline-collapsed")).toBe("1");
+    expect(localStorage.getItem("nebula.workspace.outline-collapsed")).toBe("1");
     fireEvent.click(screen.getByTestId("writing-outline-toggle"));
-    expect(localStorage.getItem("storyforge.workspace.outline-collapsed")).toBe("0");
+    expect(localStorage.getItem("nebula.workspace.outline-collapsed")).toBe("0");
   });
 
   it("从 localStorage 读取收起状态（首次渲染即收起）", () => {
-    localStorage.setItem("storyforge.workspace.outline-collapsed", "1");
+    localStorage.setItem("nebula.workspace.outline-collapsed", "1");
     render(
       <WritingArea
         current={STRUCTURED_CURRENT}

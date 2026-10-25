@@ -2,7 +2,7 @@ import { createContext, useContext, useReducer, useEffect, useRef, ReactNode } f
 import type { World, CharacterSet, NovelOutline, Outline, MapPayload } from "../../api/client";
 
 export function getSessionKey(projectId: string): string {
-  return `storyforge.wizard.state.${projectId}`;
+  return `nebula.wizard.state.${projectId}`;
 }
 
 export type WizardStatus = "idle" | "generating" | "completed" | "error";

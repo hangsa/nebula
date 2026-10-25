@@ -75,7 +75,7 @@ function buildInitMessage(p?: {
   const parts: string[] = [];
   if (p.draft_count > 0) parts.push(`${p.draft_count} 个章节草稿`);
   if (p.has_progress) parts.push("写作进度（progress.json）");
-  if (p.has_checkpoint) parts.push("检查点（.storyforge_checkpoint.json）");
+  if (p.has_checkpoint) parts.push("检查点（.nebula_checkpoint.json）");
   if (p.has_chunks) parts.push("实时写作缓冲（autopilot/chunks/）");
   if (parts.length === 0) {
     return "项目目前无草稿可清理，仅将项目状态改回 INIT（章节大纲）。\n\n确认继续？";

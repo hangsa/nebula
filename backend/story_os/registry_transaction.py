@@ -1,5 +1,5 @@
 """
-StoryForge v1.6 — RegistryTransactionManager: 叙事资产级联传播事务管理器。
+nebula v1.6 — RegistryTransactionManager: 叙事资产级联传播事务管理器。
 
 当 StoryOS Agent 更新某个叙事资产状态时，自动级联触发关联资产的状态变更，
 并执行三类校验（循环依赖 / 状态冲突 / 互斥冲突）。全部逻辑零 LLM。

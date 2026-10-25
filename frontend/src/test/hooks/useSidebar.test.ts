@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useSidebar } from "../../hooks/useSidebar";
 
-const STORAGE_KEY = "storyforge.sidebar";
+const STORAGE_KEY = "nebula.sidebar";
 
 describe("useSidebar - initialization", () => {
   beforeEach(() => {

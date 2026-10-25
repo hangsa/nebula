@@ -8,7 +8,7 @@ import StageErrorBoundary from "../components/shared/StageErrorBoundary";
 import type { ParsedLog } from "../api/client";
 
 describe("TopHeader", () => {
-  it("renders StoryForge branding", () => {
+  it("renders nebula branding", () => {
     render(
       <TopHeader
         projectName="测试项目"
@@ -19,7 +19,7 @@ describe("TopHeader", () => {
         onToggleSidebar={() => {}}
       />
     );
-    expect(screen.getByText("StoryForge")).toBeInTheDocument();
+    expect(screen.getByText("nebula")).toBeInTheDocument();
     expect(screen.getByText("测试项目")).toBeInTheDocument();
   });
 

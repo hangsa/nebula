@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Protocol
 
+from backend.conductor.checkpoint import CheckpointManager
 from backend.models.autopilot_session import (
     CurrentTask, ManagedStartConfig, QueueItem, SessionState,
 )
@@ -65,7 +66,7 @@ SCENE_WRITE_RETRY_BACKOFFS = (30, 60)  # seconds before retry #1, #2
 #   archive_priority(N) < scene_priority(N+1, 1)          (archival before next chapter)
 #
 # Why row-major (and not column-major as before):
-#   - Aligns with StoryForge's per-chapter MemoryOS cache (L1/L4/L2 survive
+#   - Aligns with nebula's per-chapter MemoryOS cache (L1/L4/L2 survive
 #     across scenes in the same chapter). Column-major thrashes the cache
 #     every scene → ~60% extra context-assembly overhead per the design doc.
 #   - Net-novel authoring works chapter-by-chapter; writing ch31.scene_4
@@ -370,7 +371,7 @@ def regenerate_chapter(fm: FileManager,
 
 def clear_checkpoint_for_chapter(project_id: str, chapter_number: int,
                                   projects_dir: Path) -> None:
-    """Clear the .storyforge_checkpoint.json when its current_chapter
+    """Clear the .nebula_checkpoint.json when its current_chapter
     matches the chapter being regenerated.
 
     Rationale: the checkpoint snapshot reflects completed work that the
@@ -379,18 +380,23 @@ def clear_checkpoint_for_chapter(project_id: str, chapter_number: int,
     runner rebuilds the checkpoint naturally on the next checkpoint tick,
     so deleting is preferable to mutating in place.
     """
-    path = projects_dir / project_id / ".storyforge_checkpoint.json"
-    if not path.exists():
-        return
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
-        # Corrupt or unreadable checkpoint — safe to leave; recover() handles it.
-        return
-    if data.get("current_chapter") == chapter_number:
-        path.unlink()
-        logger.info("checkpoint cleared for chapter=%s project=%s",
-                    chapter_number, project_id)
+    project_dir = projects_dir / project_id
+    for name in (
+        CheckpointManager.CHECKPOINT_FILENAME,
+        CheckpointManager.LEGACY_CHECKPOINT_FILENAME,
+    ):
+        path = project_dir / name
+        if not path.exists():
+            continue
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            # Corrupt or unreadable checkpoint — safe to leave; recover() handles it.
+            continue
+        if data.get("current_chapter") == chapter_number:
+            path.unlink()
+            logger.info("checkpoint cleared for chapter=%s project=%s",
+                        chapter_number, project_id)
 
 
 def repair_stuck_chapters(progress: dict, outline: dict) -> list:

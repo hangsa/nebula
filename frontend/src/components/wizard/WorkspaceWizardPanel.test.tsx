@@ -299,7 +299,7 @@ describe("WorkspaceWizardPanel (post-integration)", () => {
     // either completing step 4 first or stepping through every prior step
     // — neither of which is the unit under test.
     sessionStorage.setItem(
-      "storyforge.wizard.state.proj_test",
+      "nebula.wizard.state.proj_test",
       JSON.stringify({
         currentStep: 5,
         completedSteps: [1, 2, 3, 4],
