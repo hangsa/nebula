@@ -202,6 +202,8 @@ npm test                          # vitest run (one-shot)
 npm run test:watch                # vitest watch mode
 ```
 
+**pytest-asyncio pin matters:** `pytest tests/` collects all ~1950 tests only with `pytest-asyncio>=0.23.5` (pinned in `backend/requirements.txt`). On 0.23.0 the plugin's `pytest_collectstart` hook reads `collector.obj`, which pytest 8's `Package` node doesn't expose → `AttributeError: 'Package' object has no attribute 'obj'` aborts collection with an INTERNALERROR, and ~1500 tests silently never run. If you see that error, check the installed version before anything else.
+
 **Vitest cold-cache quirk:** first `npm test` run on `.tsx` files may report `ReferenceError: document is not defined` because jsdom hasn't initialized. Re-run (or `DEBUG="vitest:*"`) to warm the cache. Do **not** edit `vitest.config.ts` to work around this.
 
 ### LLM provider config
@@ -218,7 +220,31 @@ Supported providers (see `backend/llm/`): `anthropic`, `deepseek`, `minimax`, `m
 
 **Precedence gotcha:** pydantic-settings env vars **override `.env` silently**. If you set `MINIMAX_API_KEY=...` in the shell, the `.env` value is ignored. To debug "why is the wrong key being used?", check both the env and the file. Restart the backend after changing `.env`.
 
+**Non-interactive shell gotcha:** the Claude Code `Bash` tool runs `zsh -c "<cmd>"`, which is **non-interactive** and therefore does **not** source `~/.zshrc`. An `export MINIMAX_API_KEY=...` in `.zshrc` is invisible to any server started from that tool — it shows up as "API key not configured" in the AI Console even though your terminal exports it. Verify what the *process* actually has: `ps eww <pid> | tr ' ' '\n' | grep -i minimax`. Put provider keys in `backend/.env` (the AI Console's own write path) rather than relying on `.zshrc`.
+
 **httpx / proxy gotcha:** `httpx` clients default to `trust_env=True`, which routes through the macOS system proxy (`scutil proxy`). If Clash/whatever is off, LLM clients die with `Connection error` even though `curl` works. The fix is to construct httpx clients without proxy trust (see `make_no_proxy_async_client` helpers in `backend/llm/`).
+
+### Proxy gotcha — `pip` / `npm` too, not just httpx
+
+This shell exports `HTTP_PROXY` / `HTTPS_PROXY` pointing at a local Clash-style proxy (`127.0.0.1:7897`), while `scutil proxy` shows the *system* proxy disabled. Anything that honours those env vars inherits it — **`pip` and `npm` included**, not only the LLM httpx clients.
+
+Two distinct failure modes, and the nasty one is silent:
+
+| Proxy state | Symptom |
+|---|---|
+| Process not running | Fails, but slowly: `pip` gives up after ~8s (`Connection refused`, 5 retries); `npm` takes **>70s** before erroring |
+| Process running but upstream broken | **Hangs for minutes** — the TCP connect succeeds, then no response ever arrives, so the client sits on the socket read timeout |
+
+The hang is the one that costs you time: `pip install` looks like it's "just slow" and burns a 300s+ tool timeout with no error message. A dead-but-listening proxy is the same trap with a longer fuse.
+
+**Workaround** — bypass the proxy for a single command:
+
+```bash
+env -u HTTP_PROXY -u HTTPS_PROXY -u http_proxy -u https_proxy \
+  venv/bin/pip install -r backend/requirements.txt
+```
+
+**Diagnose before blaming the network:** `nc -z -w 2 127.0.0.1 7897` — a successful connect only proves the proxy process is up, not that it can reach PyPI. If pip/npm hangs, check the proxy's own health first; the env vars are usually the culprit, not the package index.
 
 ### Maintenance scripts (`scripts/`)
 
