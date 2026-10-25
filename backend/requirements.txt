@@ -9,7 +9,12 @@ pyyaml==6.0.1
 python-dotenv==1.0.0
 httpx==0.27.0
 pytest==8.0.0
-pytest-asyncio==0.23.0
+# 0.23.0 crashes on collection with pytest 8.x: its pytest_collectstart hook
+# reads `collector.obj`, which pytest's Package node does not expose →
+# "AttributeError: 'Package' object has no attribute 'obj'" aborts the whole
+# `pytest tests/` run (only ~450 of ~1950 tests were ever collected).
+# Fixed in 0.23.5, where the hook uses the collector's stash instead.
+pytest-asyncio==0.23.5
 # v1.6: L3 冷记忆（可选依赖）
 qdrant-client>=1.9.0
 sentence-transformers>=2.7.0
