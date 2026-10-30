@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Core principle:** Deterministic code controls the skeleton; LLMs fill the flesh. Consistency checks, state tracking, and reader metrics are all formula/rule-based — never LLM-blindsided.
 
-**Current state:** Active development on the `nebula` branch (v2.x era). Backend, frontend, and ~140 test files are in place. The codebase is **far past v1.7** — the `v1.7 active` status table in earlier revisions of this file is stale and has been removed.
+**Current state:** Active development on `main` (v2.x era). The former `nebula` and `v2.2` branches were retired on 2026-10-30 — `main` is the single development line, and `v2.2` survives only as a git tag (release marker). Backend, frontend, and ~140 test files are in place. The codebase is **far past v1.7** — the `v1.7 active` status table in earlier revisions of this file is stale and has been removed.
 
 **Stack:** Python (FastAPI) backend · React 18 + Vite + Tailwind frontend · JSON for project data · YAML for prompts/config · Qdrant + BM25 hybrid search with bge-m3 embeddings (L3 cold memory, optional). UI design system in `frontend/src/components/ds/` is Material 3–inspired (Nebula Forge tokens in `docs/design/webmain/DESIGN.md`).
 
